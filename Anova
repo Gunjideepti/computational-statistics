@@ -1,0 +1,33 @@
+import scipy.stats as s
+n=int(input("Enter the no of rows:"))
+l=[]
+for i in range(n):
+  print("Enter the row:",i+1)
+  p=list(map(int,input().split()))
+  l.append(p)
+g,k=0,0
+for i in l:
+  g=g+sum(i)
+  k=k+((sum(i)**2)/(len(i)))
+rss=0
+dim=0
+for i in l:
+  for j in i:
+    rss=rss+j**2
+    dim=dim+1
+cf=(g**2)/(dim)
+sst=rss-cf
+sstr=k-cf
+sse=sst-sstr
+mss=sstr/(len(l)-1)
+err=sse/(dim-len(l))
+f=mss/err
+print(f)
+dfn=len(l)-1
+dfd=dim-len(l)
+ftabs=s.f.ppf(q=1-.05,dfn=dfn,dfd=dfd)
+print(ftabs)
+if(f>ftabs):
+  print("We reject Ho")
+else:
+  print("We accept Ho")
