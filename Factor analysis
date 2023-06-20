@@ -1,0 +1,89 @@
+import numpy as np
+import pandas as pd
+import math
+print('enter the number')
+n = int(input())
+x=[]
+for i in range(n):
+  a=[float(x) for x in input().split()]
+  x.append(a)
+mu = []
+for i in range(len(x[0])):
+  sum = 0
+  for j in range(len(x)):
+    sum = sum+x[j][i]
+  mu.append(sum/len(x))
+mu=np.array(mu)
+sigma=[]
+for i in range(len(x[0])):
+  sum = 0
+  for j in range(len(x)):
+    sum = sum+((x[j][i]-mu[i])**2)
+  sigma.append(math.sqrt(sum/(len(x)-1)))
+sigma =np.array(sigma)
+#print(sigma)
+x_mu=x-mu
+#standardised values
+std=x_mu/sigma
+#print(std)
+c = np.dot(std.T,std)/len(x)
+eigen,eigen_vec= np.linalg.eig(c)
+id = np.argsort(eigen)[::-1]
+eigen = eigen[id]
+eigen_vec = eigen_vec[:,id]
+print(eigen)
+print(eigen_vec)
+z = []
+sum = 0
+sumT = eigen.sum()
+for i in eigen:
+  sum=sum+i
+  z.append((sum/sumT)*100)
+data = {'Principal_Components':['z1','z2','z3'],
+        'Variance_Explained':eigen,
+        'Cumulative_Proportion':z}
+df = pd.DataFrame(data)
+print('enter threshold')
+k = float(input())
+count = 1
+for i in z:
+  if(k>=i):
+    count += 1
+PC = df['Principal_Components']
+for i in range(count):
+  print('{}=[{}x1]+[{}x2]+[{}x3]'.format(PC[i],eigen_vec[0][i],eigen_vec[1][i],eigen_vec[2][i]))
+print('Principal Component Table',df)
+#factor analysis
+f1=[]
+f2=[]
+f=[]
+for j in range(len(eigen_vec[0])):
+  for k in range(len(eigen_vec[j])):
+    f.append((eigen_vec[k][j])*math.sqrt(eigen[j]))
+#print(f)
+f1=f[:3]
+#print(f1)
+f2=f[3:6]
+#print(f2)
+h=[f1,f2]
+#print(h)
+h_sq=[]
+per_var=[]
+for i in range(len(f1)):
+  sum=0
+  for j in range(len(h)):
+      sum=sum+h[j][i]**2
+  h_sq.append(sum)
+for i in range(len(eigen)):
+  per_var.append((eigen[i]/sumT)*100)
+h_sq=np.array(h_sq)
+tot_com=h_sq.sum()
+#print(tot_com)
+#print(per_var)
+#factor loading table
+print('variables Estimated_Factor_loadings Communalities')
+fac_data={'F1':f1,'F2':f2,'H_Sq':h_sq}
+df = pd.DataFrame(fac_data, index=['Finance','Marketing','Buspolicies'])
+print(df)
+print('var_Exp=    {}    {}    {}'.format(round(eigen[0],4),round(eigen[1],4),round(tot_com,2)))
+print('per_var=    {}    {}'.format(round(per_var[0],4),round(per_var[1],4)))
