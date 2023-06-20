@@ -1,0 +1,50 @@
+import numpy as np
+import pandas as pd
+d={'b1':[13,6,11],'b2':[7,6,5],'b3':[9,3,15],'b4':[3,1,5]}
+df=pd.DataFrame(d)
+df.index=['treatment1','treatment2','treatment3']
+
+b=df.sum(axis=0)
+bsq=b*b
+t=df.sum(axis=1)
+
+tsq=t*t
+print(tsq)
+
+def sum(x):
+  s=0
+  for i in x:
+    s=s+i
+  return s
+grandtotal=sum(t)
+
+sumtsq=sum(tsq)
+
+sumbsq=sum(bsq)
+
+rss=0
+for i in d.keys():
+  for j in d[i]:
+    rss=rss+(j*j)
+cf=(grandtotal)**2/df.size
+sum_of_tot=rss-cf
+sum_of_treatments=(sumtsq/len(df.columns)-cf)
+sum_of_blocks=(sumbsq/len(df)-cf)
+sum_of_errors=((sum_of_tot-sum_of_treatments)-sum_of_blocks)
+df_treatments=len(df)-1
+df_blocks=len(df.columns)-1
+df_error=df_treatments*df_blocks
+mst=sum_of_treatments/df_treatments
+msb=sum_of_blocks/df_blocks
+mse=sum_of_errors/df_error
+Fcal_treatments=mst/mse
+Fcal_blocks=msb/mse
+import scipy.stats as s
+F_tab_treat=s.f.ppf(.95,df_treatments,df_error)
+F_tab_block=s.f.ppf(.95,df_blocks,df_error)
+if(F_tab_treat>Fcal_treatments):
+  print("homogeneity among treatments")
+if(F_tab_block>Fcal_blocks):
+  print("homogeneity among blocks")
+else:
+  print("there is no homogeneity")
