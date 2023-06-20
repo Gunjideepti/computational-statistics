@@ -1,0 +1,133 @@
+import pandas as pd
+import numpy as np
+df1=pd.read_excel("C:\\Users\\y20cs95\\Desktop\\Book1.xlsx")
+df2=pd.read_excel("C:\\Users\\y20cs95\\Desktop\\Book2.xlsx")
+df3=pd.read_excel("C:\\Users\\y20cs95\\Desktop\\Book3.xlsx")
+print(df1)
+print(df2)
+print(df3)
+def mean(x):
+    s=0
+    for i in x:
+        s=s+i
+    m=s/len(x)
+    return m
+
+y1n=mean(df1['n1'])
+y1d=mean(df1['d1'])
+y2n=mean(df2['n2'])
+y2d=mean(df2['d2'])
+y3n=mean(df3['n3'])
+y3d=mean(df3['d3'])
+y1=np.array([y1n,y1d])
+y2=np.array([y2n,y2d])
+y3=np.array([y3n,y3d])
+
+array([8., 4.])
+
+n1=list(df1['n1'])
+n2=list(df2['n2'])
+n3=list(df3['n3'])
+tot_num=n1+n2+n3
+d1=list(df1['d1'])
+d2=list(df2['d2'])
+d3=list(df3['d3'])
+tot_den=d1+d2+d3
+
+
+over_num_mean=mean(tot_num)
+print(over_num_mean)
+over_den_mean=mean(tot_den)
+print(over_den_mean)
+
+
+
+overall_mean=np.array([over_num_mean,over_den_mean])
+
+
+def diff_num(x,y):
+    l=[]
+    for i in x:
+        d=i-y[0]
+        l.append(d**2)
+    return l
+p=diff_num(n1,y1)
+q=diff_num(n2,y2)
+r=diff_num(n3,y3)
+def sum(x):
+    s=0
+    for i in x:
+        s=s+i
+    return s
+sse1=sum(p)+sum(q)+sum(r)
+print(sse1)
+s=diff_num(tot_num,overall_mean)
+sst1=sum(s)
+sst1
+ssr1=sst1-sse1
+print(ssr1)
+def diff_den(x,y):
+    l=[]
+    for i in x:
+        d=i-y[1]
+        l.append(d**2)
+    return l
+p=diff_den(d1,y1)
+q=diff_den(d2,y2)
+r=diff_den(d3,y3)
+sse2=sum(p)+sum(q)+sum(r)
+sse2
+s=diff_den(tot_den,overall_mean)
+sst2=sum(s)
+sst2
+ssr2=sst2-sse2
+ssr2
+df1['n1d1']=df1['n1']*df1['d1']
+df2['n2d2']=df2['n2']*df2['d2']
+df3['n3d3']=df3['n3']*df3['d3']
+print(df1,df2,df3)
+n1d1=df1['n1d1']
+n2d2=df2['n2d2']
+n3d3=df3['n3d3']
+def diff_mul(x,y):
+    l=[]
+    for i in x:
+        mul=i-(y[0]*y[1])
+        l.append(mul)
+    return l
+p=diff_mul(n1d1,y1)
+q=diff_mul(n2d2,y2)
+r=diff_mul(n3d3,y3)
+sse=sum(p)+sum(q)+sum(r)
+sse
+p=diff_mul(n1d1,overall_mean)
+q=diff_mul(n2d2,overall_mean)
+r=diff_mul(n3d3,overall_mean)
+sst=sum(p)+sum(q)+sum(r)
+sst
+ssr=sst-sse
+ssr
+
+b=np.array([[ssr1,ssr],[ssr,ssr2]])
+w=np.array([[sse1,sse],[sse,sse2]])
+t=np.array([[sst1,sst],[sst,sst2]])
+def det(x):
+    d=0
+    d=(x[0][0]*x[1][1])-(x[0][1]*x[1][0])
+    return d
+wilks=det(w)/det(t)
+print(wilks)
+k=3
+df_reg=k-1
+n=len(n1)+len(n2)+len(n3)
+df_err=n-k
+print(df_reg,df_err)
+fcal=((n-k-1)/(k-1))*((1-(wilks**0.5))/(wilks**0.5))
+print(fcal)
+import scipy.stats as s
+ftab=s.f.ppf(.95,2*(k-1),2*(n-k-1))
+print(ftab)
+if(fcal>=ftab):
+    print("reject null")
+else:
+    print("accept null")
