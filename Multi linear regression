@@ -1,0 +1,90 @@
+import scipy.stats as s
+import math
+import numpy as np
+x=[[1,-5,5],
+  [1,-4,4],
+  [1,-1,1],
+  [1,2,-3],
+  [1,2,-2],
+  [1,3,-2],
+  [1,3,-3]]
+y=[11,11,8,2,5,5,4]
+x1=np.array([-5,-4,-1,2,2,3,3])
+x2=np.array([5,4,1,-3,-2,-2,-3])
+y=np.array(y)
+x=np.array(x)
+xt=np.transpose(x)
+xtx=np.dot(xt,x)
+print(xt)
+xtxinverse=np.linalg.inv(xtx)
+print("x transpose x inverse is:")
+print(xtxinverse)
+xty=np.dot(xt,y)
+betahat=np.dot(xtxinverse,xty)
+print("betahat:",betahat)
+y_pred=betahat[0]+betahat[1]*x1+betahat[2]*x2
+y_pred
+print("ycap:",y_pred)
+e=y-y_pred
+print("e:",e)
+sse=sum(e*e)
+print("sse:",sse)
+ybar=sum(y)/7
+print("ybar:",ybar)
+yy=y-ybar
+print("y-ybar:",yy)
+sst=sum(yy*yy)
+print(sst)
+ssr=sst-sse
+print("ssr:",ssr)
+rr=ssr/sst
+print("rr:",rr)
+if(rr>0.90):
+  print("good fit")
+else:
+    print("not good fit:")
+
+#to test the goodness of fit using ANOVA test
+dfr=2
+msr=ssr/dfr
+print("msr:",msr)
+dfe=4
+mse=sse/dfe
+print("mse",mse)
+fcal=msr/mse
+print("f-ratio:",fcal)
+los=0.05
+ftab=s.f.ppf(1-0.05,2,4)
+print("f table value :",ftab)
+if(fcal>ftab):
+    print("we reject Ho")
+else:
+    print("we accept H0")
+#test for individual parameters
+se1=math.sqrt(mse*xtxinverse[0][0])
+print("se1:",se1)
+se2=math.sqrt(mse*xtxinverse[1][1])
+print("se2:",se2)
+se3=math.sqrt(mse*xtxinverse[2][2])
+print("se3:",se3)
+t1=betahat[0]/se1
+print("t-value of 1:",t1)
+t2=betahat[1]/se2
+print("t-value of 2:",t2)
+t3=betahat[2]/se3
+print("t-value of 3:",t3)
+alpha=0.025
+ttab=s.t.ppf(q=1-0.025, df=4)
+print("table value of t-ratio:",ftab)
+if(t1>ttab):
+  print("contributing the model:")
+else:
+  print("not contributing the model:")
+if(t2>ttab):
+  print("contributing the model:")
+else:
+  print("not contributing the model:")
+if(t3>ttab):
+  print("contributing the model:")
+else:
+  print("not contributing the model:")
